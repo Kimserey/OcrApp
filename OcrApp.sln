@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "OcrApp", "OcrApp\OcrApp.fsproj", "{BA978D47-FB92-4FD3-B45E-A1361326EF75}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Core", "Core\Core.fsproj", "{9D377418-5D60-4D97-A3BF-CAD26B86B6FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BA978D47-FB92-4FD3-B45E-A1361326EF75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA978D47-FB92-4FD3-B45E-A1361326EF75}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA978D47-FB92-4FD3-B45E-A1361326EF75}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA978D47-FB92-4FD3-B45E-A1361326EF75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D377418-5D60-4D97-A3BF-CAD26B86B6FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D377418-5D60-4D97-A3BF-CAD26B86B6FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D377418-5D60-4D97-A3BF-CAD26B86B6FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D377418-5D60-4D97-A3BF-CAD26B86B6FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
