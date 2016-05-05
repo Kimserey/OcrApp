@@ -10,7 +10,7 @@ module OCR =
     type TextResult = TextResult of string 
     type Confidence = Confidence of float32
 
-    let execute imgStream =
+    let getText imgStream =
         use engine = new TesseractEngine("tessdata", "eng")
         use img    = PixConverter.ToPix (new Bitmap(Bitmap.FromStream imgStream))
         use page   = engine.Process img
