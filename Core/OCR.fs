@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace OrcApp.Core
 
 open System
 open System.IO
