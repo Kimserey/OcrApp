@@ -16,58 +16,68 @@ open Microsoft.Owin.Hosting
 open Microsoft.Owin.StaticFiles
 open Microsoft.Owin.FileSystems
 open Cropbox
+open WebSharper.Resources
 
-[<JavaScript; AutoOpen>]
-module Domain =
-    type Image = {
-        ContentType: string
-        ContentBase64: string
-    } with
-        member x.Src = sprintf "data:%s;base64,%s" x.ContentType x.ContentBase64
+module Resources =
+
+    module General =
+        type Style() =
+           inherit BaseResource("style.css")
+
+    [<assembly:System.Web.UI.WebResource("style.css", "text/css"); 
+      assembly:Require(typeof<General.Style>)>]
+    do()
 
 module Remoting =
     [<Rpc>]
-    let getText (img: Image): Async<string> = 
-        use memory = new MemoryStream(Convert.FromBase64String img.ContentBase64)
+    let getText (imageBase64String: string): Async<string list * float> = 
+        use memory = new MemoryStream(Convert.FromBase64String imageBase64String)
         let OCR.TextResult txt, OCR.Confidence confidence = OCR.getText memory
-        async.Return txt
+        async.Return (txt.Split '\n' |> Array.toList, float confidence)
 
 [<JavaScript>]
 module Client =
+    open Bootstrap
+
+    let ocrResult = Var.Create ([], 0.)
+    let isLoading = Var.Create false
     
-    let initCropbox() =
-        Cropbox.init
-        <| Identifiers.Default
-        <| Options.Default
-        <| fun values -> 
-            async {
-                let! txt = Remoting.getText({ ContentType = values.[0]; ContentBase64 = values.[1] })
-                Console.Log txt
-            }
-            |> Async.Start
+    let display txtView isLoadingView =
+        (txtView, isLoadingView)
+        ||> View.Map2 (fun (txt, confidence) isLoading -> txt, confidence, isLoading)
+        |> Doc.BindView(fun (txt: string list, confidence: float, isLoading: bool) -> 
+            if isLoading then
+                iAttr [ attr.``class`` "fa fa-refresh fa-spin fa-3x fa-fw margin-bottom" ] [] :> Doc
+            else
+                txt 
+                |> List.map (fun t -> div [ Doc.TextNode t ] :> Doc)
+                |> Doc.Concat)
+
+    let handle (img: Image) =
+        async {
+            Var.Set isLoading true
+            let! res = Remoting.getText img.ContentBase64
+            Var.Set ocrResult res
+            Var.Set isLoading false
+        } |> Async.Start
 
     let main() =
-        divAttr [ attr.style "width: 400px; height: 400px; margin: 20px auto;" 
-                  on.afterRender (fun _ -> initCropbox()) ] 
-                [ divAttr [ attr.``class`` "imageBox" ]
-                          [ divAttr [ attr.``class`` "zoom-btn" ] 
-                                    [ divAttr [ attr.id Identifiers.Default.zoomIn
-                                                attr.``class`` "btn btn-primary btn-block"  ] 
-                                              [ iAttr [ attr.``class`` "fa fa-search-plus"  ] [] ]
-                                      divAttr [ attr.id Identifiers.Default.zoomOut
-                                                attr.``class`` "btn btn-primary btn-block"  ] 
-                                              [ iAttr [ attr.``class`` "fa fa-search-minus" ] [] ] ]
-                            divAttr [ attr.``class`` "thumbBox" ] []
-                            divAttr [ attr.``class`` "spinner"
-                                      attr.style "display: none" ] 
-                                    [ text "Loading..." ] ]
-                  divAttr [ attr.style "width: 60%; margin: auto;" ]
-                          [ inputAttr [ attr.``type`` "file"
-                                        attr.style "margin: 5px 0;"
-                                        attr.id Identifiers.Default.file ] []
-                            divAttr [ attr.id Identifiers.Default.crop
-                                      attr.``class`` "btn btn-primary btn-block" ] [ text "Upload picture" ]
-                            pAttr   [ attr.style "text-align:center; margin: 10px 0;" ] [ text "or use default" ] ] ]
+        [ Header.Create HeaderType.H1 "Read text from image in WebSharper/F#"
+          |> Header.AddSubtext "Using ImageMagick and Tesseract-OCR"
+          |> Header.Render
+
+          Hyperlink.Create(HyperlinkAction.Href "https://twitter.com/Kimserey_Lam", "Follow me on twitter @Kimserey_Lam")
+          |> Hyperlink.Render :> Doc
+
+          br [] :> Doc
+
+          Hyperlink.Create(HyperlinkAction.Href "https://twitter.com/Kimserey_Lam", "Source code available here.")
+          |> Hyperlink.Render :> Doc
+
+          GridRow.Create [ GridColumn.Create([ Cropbox.cropper handle ], [ GridColumnSize.ColMd6 ])
+                           GridColumn.Create([ display ocrResult.View isLoading.View ], [ GridColumnSize.ColMd6 ]) ]
+          |> GridRow.Render :> Doc ]
+        |> Doc.Concat
 
 module Site =
     module Main =

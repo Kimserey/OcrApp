@@ -73,9 +73,11 @@
   <ItemGroup>
     <Content Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="Bootstrap.fs" />
     <Compile Include="Cropbox.fs" />
     <Compile Include="Program.fs" />
     <None Include="index.html" />
+    <EmbeddedResource Include="style.css" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="HttpMultipartParser">
@@ -157,6 +159,10 @@
     </Reference>
     <Reference Include="WebSharper.Core.JavaScript">
       <HintPath>..\packages\WebSharper.3.6.11.234\lib\net40\WebSharper.Core.JavaScript.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebSharper.Forms">
+      <HintPath>..\packages\WebSharper.Forms.3.6.10.48-alpha\lib\net40\WebSharper.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebSharper.Html.Client">
