@@ -193,15 +193,19 @@ module Bootstrap =
     /// Build a Bootstrap grid row with columns
     type GridRow = {
         Columns: GridColumn list
+        CustomStyle: string
     } with
         static member Empty =
-            { Columns = [] }
+            { Columns = []; CustomStyle = "" }
 
         static member Create(columns) =
-            { Columns = columns }
+            { Columns = columns; CustomStyle = "" }
         
+        static member AddCustomStyle style (x: GridRow) =
+            { x with CustomStyle = style }
+
         static member Render x =
-            divAttr [ attr.``class`` "row" ] (x.Columns |> List.map GridColumn.Render |> Seq.cast)
+            divAttr [ attr.``class`` "row"; attr.style x.CustomStyle ] (x.Columns |> List.map GridColumn.Render |> Seq.cast)
         
         member x.Render() =
             GridRow.Render x

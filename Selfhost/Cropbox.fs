@@ -85,9 +85,9 @@ module Cropbox =
                             divAttr [ attr.``class`` "spinner"
                                       attr.style "display: none" ] 
                                     [ text "Loading..." ] ]
-                  divAttr [ attr.style "width: 60%; margin: auto;" ]
+                  divAttr [ attr.style "width: 80%; margin: auto;" ]
                           [ inputAttr [ attr.``type`` "file"
                                         attr.style "margin: 5px 0;"
                                         attr.id Identifiers.Default.File ] []
                             divAttr [ attr.id Identifiers.Default.Crop
-                                      attr.``class`` "btn btn-primary btn-block" ] [ text "Scan" ] ] ]
+                                      attr.``class`` "btn btn-primary btn-block" ] [ text "SCAN TEXT" ] ] ]

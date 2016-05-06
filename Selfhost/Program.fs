@@ -43,15 +43,17 @@ module Client =
     let isLoading = Var.Create false
     
     let display txtView isLoadingView =
-        (txtView, isLoadingView)
-        ||> View.Map2 (fun (txt, confidence) isLoading -> txt, confidence, isLoading)
-        |> Doc.BindView(fun (txt: string list, confidence: float, isLoading: bool) -> 
-            if isLoading then
-                iAttr [ attr.``class`` "fa fa-refresh fa-spin fa-3x fa-fw margin-bottom" ] [] :> Doc
-            else
-                txt 
-                |> List.map (fun t -> div [ Doc.TextNode t ] :> Doc)
-                |> Doc.Concat)
+        divAttr 
+            [ attr.``class`` "well" ]
+            [ (txtView, isLoadingView)
+              ||> View.Map2 (fun (txt, confidence) isLoading -> txt, confidence, isLoading)
+              |> Doc.BindView(fun (txt: string list, confidence: float, isLoading: bool) -> 
+                    if isLoading then
+                        iAttr [ attr.``class`` "fa fa-refresh fa-spin fa-3x fa-fw margin-bottom" ] [] :> Doc
+                    else
+                        [ yield! txt |> List.map (fun t -> div [ Doc.TextNode t ] :> Doc)
+                          yield strongAttr [ attr.style "margin-top: 20px" ] [ Doc.TextNode ("Confidence:" + string confidence) ] :> Doc ]
+                        |> Doc.Concat) ]
 
     let handle (img: Image) =
         async {
@@ -66,16 +68,15 @@ module Client =
           |> Header.AddSubtext "Using ImageMagick and Tesseract-OCR"
           |> Header.Render
 
-          Hyperlink.Create(HyperlinkAction.Href "https://twitter.com/Kimserey_Lam", "Follow me on twitter @Kimserey_Lam")
+          Hyperlink.Create(HyperlinkAction.Href "https://twitter.com/Kimserey_Lam", "-> Follow me on twitter @Kimserey_Lam <-")
           |> Hyperlink.Render :> Doc
-
           br [] :> Doc
-
-          Hyperlink.Create(HyperlinkAction.Href "https://twitter.com/Kimserey_Lam", "Source code available here.")
+          Hyperlink.Create(HyperlinkAction.Href "https://github.com/Kimserey/OcrApp", "-> Source code available here <-")
           |> Hyperlink.Render :> Doc
 
           GridRow.Create [ GridColumn.Create([ Cropbox.cropper handle ], [ GridColumnSize.ColMd6 ])
                            GridColumn.Create([ display ocrResult.View isLoading.View ], [ GridColumnSize.ColMd6 ]) ]
+          |> GridRow.AddCustomStyle "margin-top: 50px;"
           |> GridRow.Render :> Doc ]
         |> Doc.Concat
 
