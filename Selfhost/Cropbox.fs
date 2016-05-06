@@ -73,7 +73,13 @@ module Cropbox =
                             let img = { ContentType = values.[0]; ContentBase64 = values.[1] }
                             handle img)
                   ) ] 
-                [ divAttr [ attr.``class`` "imageBox" ]
+                [ divAttr [ attr.style "width: 100%; margin: auto; margin-bottom: 10px;" ]
+                          [ inputAttr [ attr.``type`` "file"
+                                        attr.style "margin: 5px 0;"
+                                        attr.id Identifiers.Default.File ] []
+                            divAttr [ attr.id Identifiers.Default.Crop
+                                      attr.``class`` "btn btn-primary btn-block" ] [ text "SCAN TEXT" ] ]
+                  divAttr [ attr.``class`` "imageBox" ]
                           [ divAttr [ attr.``class`` "zoom-btn" ] 
                                     [ divAttr [ attr.id Identifiers.Default.ZoomInButton
                                                 attr.``class`` "btn btn-primary btn-block"  ] 
@@ -84,10 +90,4 @@ module Cropbox =
                             divAttr [ attr.``class`` "thumbBox" ] []
                             divAttr [ attr.``class`` "spinner"
                                       attr.style "display: none" ] 
-                                    [ text "Loading..." ] ]
-                  divAttr [ attr.style "width: 80%; margin: auto;" ]
-                          [ inputAttr [ attr.``type`` "file"
-                                        attr.style "margin: 5px 0;"
-                                        attr.id Identifiers.Default.File ] []
-                            divAttr [ attr.id Identifiers.Default.Crop
-                                      attr.``class`` "btn btn-primary btn-block" ] [ text "SCAN TEXT" ] ] ]
+                                    [ text "Loading..." ] ] ]

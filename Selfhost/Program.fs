@@ -30,36 +30,52 @@ module Resources =
 
 module Remoting =
     [<Rpc>]
-    let getText (imageBase64String: string): Async<string list * float> = 
+    let getTextNoCleaning (imageBase64String: string): Async<string * string list * float> = 
         use memory = new MemoryStream(Convert.FromBase64String imageBase64String)
-        let OCR.TextResult txt, OCR.Confidence confidence = OCR.getText memory
-        async.Return (txt.Split '\n' |> Array.toList, float confidence)
+        let OCR.Image imageBase64, OCR.TextResult txt, OCR.Confidence confidence = OCR.getTextNoCleaning memory
+        async.Return (imageBase64, txt.Split '\n' |> Array.toList, float confidence)
+
+    [<Rpc>]
+    let getText (imageBase64String: string): Async<string * string list * float> = 
+        use memory = new MemoryStream(Convert.FromBase64String imageBase64String)
+        let OCR.Image imageBase64, OCR.TextResult txt, OCR.Confidence confidence = OCR.getText memory
+        async.Return (imageBase64, txt.Split '\n' |> Array.toList, float confidence)
 
 [<JavaScript>]
 module Client =
     open Bootstrap
 
-    let ocrResult = Var.Create ([], 0.)
+    let ocrResult = Var.Create ("", [], 0.)
+    let ocrNoCleaningResult = Var.Create ("", [], 0.)
     let isLoading = Var.Create false
+
     
     let display txtView isLoadingView =
         divAttr 
             [ attr.``class`` "well" ]
             [ (txtView, isLoadingView)
-              ||> View.Map2 (fun (txt, confidence) isLoading -> txt, confidence, isLoading)
-              |> Doc.BindView(fun (txt: string list, confidence: float, isLoading: bool) -> 
+              ||> View.Map2 (fun (imgBase64, txt, confidence) isLoading ->imgBase64, txt, confidence, isLoading)
+              |> Doc.BindView(fun (imgBase64: string, txt: string list, confidence: float, isLoading: bool) -> 
                     if isLoading then
                         iAttr [ attr.``class`` "fa fa-refresh fa-spin fa-3x fa-fw margin-bottom" ] [] :> Doc
                     else
-                        [ yield! txt |> List.map (fun t -> div [ Doc.TextNode t ] :> Doc)
-                          yield strongAttr [ attr.style "margin-top: 20px" ] [ Doc.TextNode ("Confidence:" + string confidence) ] :> Doc ]
+                        [ strong [ Doc.TextNode "Scanned image:" ] 
+                          div [ imgAttr [ attr.src ("data:image/jpeg;base64," + imgBase64) ] [] ]
+                          br []
+                          p [ yield strong [ Doc.TextNode "Detected text:" ] :> Doc
+                              yield! txt |> List.map (fun t -> div [ Doc.TextNode t ] :> Doc) ]
+                          br []
+                          strong [ Doc.TextNode ("Confidence:" + string confidence) ] ]
+                        |> Seq.cast
                         |> Doc.Concat) ]
 
     let handle (img: Image) =
         async {
             Var.Set isLoading true
-            let! res = Remoting.getText img.ContentBase64
-            Var.Set ocrResult res
+            let! res1 = Remoting.getText img.ContentBase64
+            Var.Set ocrResult res1
+            let! res2 = Remoting.getTextNoCleaning img.ContentBase64
+            Var.Set ocrNoCleaningResult res2
             Var.Set isLoading false
         } |> Async.Start
 
@@ -74,8 +90,17 @@ module Client =
           Hyperlink.Create(HyperlinkAction.Href "https://github.com/Kimserey/OcrApp", "-> Source code available here <-")
           |> Hyperlink.Render :> Doc
 
-          GridRow.Create [ GridColumn.Create([ Cropbox.cropper handle ], [ GridColumnSize.ColMd6 ])
-                           GridColumn.Create([ display ocrResult.View isLoading.View ], [ GridColumnSize.ColMd6 ]) ]
+          GridRow.Create [ GridColumn.Create([ Header.Create HeaderType.H3 "Scan image"
+                                               |> Header.Render
+                                               Cropbox.cropper handle ], [ GridColumnSize.ColMd4; GridColumnSize.ColSm6 ])
+
+                           GridColumn.Create([ Header.Create HeaderType.H3 "With Textcleaner"
+                                               |> Header.Render
+                                               display ocrResult.View isLoading.View ], [ GridColumnSize.ColMd4; GridColumnSize.ColSm6 ]) 
+
+                           GridColumn.Create([ Header.Create HeaderType.H3 "Without Textcleaner"
+                                               |> Header.Render
+                                               display ocrNoCleaningResult.View isLoading.View ], [ GridColumnSize.ColMd4; GridColumnSize.ColSm6 ])]
           |> GridRow.AddCustomStyle "margin-top: 50px;"
           |> GridRow.Render :> Doc ]
         |> Doc.Concat

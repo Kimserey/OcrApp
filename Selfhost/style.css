@@ -3,15 +3,14 @@
 **********************************************************/
 
 .cropper {
-    width: 800px; 
     height: 800px; 
     margin: auto;
 }
 
 .imageBox {
     position: relative;
-    height: 80%;
-    width: 80%;
+    height: 100%;
+    width: 100%;
     border: 1px solid #0079a1;
     background: #fff;
     overflow: hidden;
@@ -22,12 +21,12 @@
 
     .imageBox .thumbBox {
         position: absolute;
-        top: 25%;
-        left: 25%;
-        width: 80%;
-        height: 80%;
-        margin-top: -15%;
-        margin-left: -15%;
+        top: 14%;
+        left: 16%;
+        width: 85%;
+        height: 85%;
+        margin-top: -10%;
+        margin-left: -10%;
         box-sizing: border-box;
         box-shadow: 0 0 0 1000px rgba(26, 26, 26, 0.22);
         background: none repeat scroll 0% 0% transparent;
