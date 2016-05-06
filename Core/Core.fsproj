@@ -94,6 +94,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Magick.NET-Q16-AnyCPU">
+      <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.0.1.101\lib\net40-client\Magick.NET-Q16-AnyCPU.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
@@ -106,6 +110,13 @@
       <HintPath>..\packages\Tesseract.3.0.2.0\lib\net451\Tesseract.dll</HintPath>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImageTools\ImageTools.csproj">
+      <Name>ImageTools</Name>
+      <Project>{e9d61d2d-d883-4404-9096-b7741fa0f1f4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
