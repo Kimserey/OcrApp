@@ -81,14 +81,18 @@ module Client =
 
     let main() =
         [ Header.Create HeaderType.H1 "Read text from image in WebSharper/F#"
-          |> Header.AddSubtext "Using ImageMagick and Tesseract-OCR"
+          |> Header.AddSubtext "Using ImageMagick and Tesseract-OCR - This webapp is a prototype which serves as a demonstration for my blog post."
           |> Header.Render
-
+          
+          Hyperlink.Create(HyperlinkAction.Href "https://kimsereyblog.blogspot.co.uk/2016/05/extract-text-from-images-in-f-ocring.html", "-> Link to blog post here <-")
+          |> Hyperlink.Render :> Doc
+          br [] :> Doc
           Hyperlink.Create(HyperlinkAction.Href "https://twitter.com/Kimserey_Lam", "-> Follow me on twitter @Kimserey_Lam <-")
           |> Hyperlink.Render :> Doc
           br [] :> Doc
           Hyperlink.Create(HyperlinkAction.Href "https://github.com/Kimserey/OcrApp", "-> Source code available here <-")
           |> Hyperlink.Render :> Doc
+          br [] :> Doc
 
           GridRow.Create [ GridColumn.Create([ Header.Create HeaderType.H3 "Scan image"
                                                |> Header.Render
