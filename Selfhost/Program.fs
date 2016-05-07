@@ -110,7 +110,7 @@ module Site =
         type Page = { Body: Doc list }
         let template = 
             Content
-                .Template<Page>(__SOURCE_DIRECTORY__ + "/index.html")
+                .Template<Page>("~/index.html")
                 .With("body", fun x -> x.Body)
 
         let site = Application.SinglePage (fun _ -> 
@@ -118,12 +118,7 @@ module Site =
 
     [<EntryPoint>]
     let main args =
-        let rootDirectory, url =
-            match args with
-            | [| rootDirectory; url |] -> rootDirectory, url
-            | [| url |] -> "../..", url
-            | [| |] -> "../..", "http://localhost:9900/"
-            | _ -> eprintfn "Usage: Host ROOT_DIRECTORY URL"; exit 1
+        let rootDirectory, url = "..", (new UriBuilder(new Uri("http://localhost:9000/"), Host = "+")).ToString()
         use server = WebApp.Start(url, fun appB ->
             appB.UseStaticFiles(
                     StaticFileOptions(

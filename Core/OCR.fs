@@ -24,8 +24,6 @@ module OCR =
         // 
         use img = new MagickImage(new Bitmap(Bitmap.FromStream imgStream))
         let cleaner = TextCleanerScript()
-        cleaner.FilterOffset <- new Percentage(15.)
-        cleaner.Trim <- true
         let cleaned = cleaner.Execute(img).ToBitmap()
 
         // Use processed image with Tesseract OCR to get text

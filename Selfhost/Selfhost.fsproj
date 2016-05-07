@@ -33,7 +33,7 @@
     <Name>Selfhost</Name>
     <RootNamespace>Selfhost</RootNamespace>
     <AssemblyName>Selfhost</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <Target Name="IncludeContent" BeforeTargets="Compile">
@@ -61,6 +61,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartArguments />
+  </PropertyGroup>
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <Import Project="..\packages\WebSharper.3.6.11.234\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper.3.6.11.234\build\WebSharper.targets')" />
@@ -76,7 +79,9 @@
     <Compile Include="Bootstrap.fs" />
     <Compile Include="Cropbox.fs" />
     <Compile Include="Program.fs" />
-    <None Include="index.html" />
+    <None Include="index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <EmbeddedResource Include="style.css" />
   </ItemGroup>
   <ItemGroup>
